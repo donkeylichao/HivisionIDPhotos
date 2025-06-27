@@ -211,9 +211,13 @@ def get_modnet_matting(input_image, checkpoint_path, ref_size=512):
     im, width, length = read_modnet_image(input_image=input_image, ref_size=ref_size)
 
     matte = HIVISION_MODNET_SESS.run([output_name], {input_name: im})
+    # 将遮罩值从0-1范围转换为0-255范围的uint8类型
     matte = (matte[0] * 255).astype("uint8")
+    # 去除多余的维度
     matte = np.squeeze(matte)
+    # 将遮罩调整到原始图片大小
     mask = cv2.resize(matte, (width, length), interpolation=cv2.INTER_AREA)
+    # 将输入图片分离为BGR三个通道
     b, g, r = cv2.split(np.uint8(input_image))
 
     output_image = cv2.merge((b, g, r, mask))
