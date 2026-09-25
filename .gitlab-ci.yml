@@ -1,0 +1,29 @@
+stages:
+  - image
+  - deploy
+
+variables:
+  ALIYUN_REGISTRY: registry.cn-beijing.aliyuncs.com
+  IMAGE_REPOSITORY: younger833/hivision_idphotos
+  HELM_RELEASE: photos
+  KUBE_NAMESPACE: default
+  HELM_BIN: /Users/yanglichao/go/bin/helm
+
+default:
+  tags:
+    - local-mac
+
+docker-image:
+  stage: image
+  script:
+    - echo "$ALIYUN_REGISTRY_PASSWORD" | docker login "$ALIYUN_REGISTRY" --username "$ALIYUN_REGISTRY_USERNAME" --password-stdin
+    - make docker-push VERSION="$CI_COMMIT_SHORT_SHA" REGISTRY="$ALIYUN_REGISTRY" IMAGE_REPOSITORY="$IMAGE_REPOSITORY"
+  after_script:
+    - docker logout "$ALIYUN_REGISTRY"
+
+deploy:
+  stage: deploy
+  needs:
+    - docker-image
+  script:
+    - make deploy VERSION="$CI_COMMIT_SHORT_SHA" REGISTRY="$ALIYUN_REGISTRY" IMAGE_REPOSITORY="$IMAGE_REPOSITORY" HELM_RELEASE="$HELM_RELEASE" KUBE_NAMESPACE="$KUBE_NAMESPACE" HELM="$HELM_BIN"

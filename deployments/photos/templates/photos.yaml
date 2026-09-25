@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photos
+spec:
+  replicas: {{ .Values.replicas }}
+
+  selector:
+    matchLabels:
+      app: photos
+
+  template:
+    metadata:
+      labels:
+        app: photos
+
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      containers:
+        - name: photos
+          image: {{ .Values.image }}
+
+          command:
+            - python3
+            - deploy_api.py
+
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: photos
+spec:
+  selector:
+    app: photos
+
+  ports:
+    - port: 8080
+      targetPort: 8080

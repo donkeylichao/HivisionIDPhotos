@@ -1,0 +1,5 @@
+image: registry.cn-beijing.aliyuncs.com/younger833/hivision_idphotos:1.0.1
+replicas: 1
+
+imagePullSecrets:
+  - name: aliyun-registry
