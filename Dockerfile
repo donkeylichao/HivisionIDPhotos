@@ -1,4 +1,5 @@
-FROM python:3.10-slim
+ARG PYTHON_IMAGE=public.ecr.aws/docker/library/python:3.10-slim
+FROM ${PYTHON_IMAGE}
 
 # Install system dependencies
 RUN sed -i 's|http://deb.debian.org|https://mirrors.aliyun.com|g' /etc/apt/sources.list.d/debian.sources \
