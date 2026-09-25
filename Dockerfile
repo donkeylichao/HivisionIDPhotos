@@ -14,6 +14,15 @@ COPY requirements.txt requirements-app.txt ./
 
 RUN pip install --no-cache-dir -r requirements.txt -r requirements-app.txt
 
+COPY scripts/download_model.py scripts/download_model.py
+
+RUN python scripts/download_model.py --models all \
+    && test -s hivision/creator/weights/hivision_modnet.onnx \
+    && test -s hivision/creator/weights/modnet_photographic_portrait_matting.onnx \
+    && test -s hivision/creator/weights/rmbg-1.4.onnx \
+    && test -s hivision/creator/weights/birefnet-v1-lite.onnx \
+    && test -s hivision/creator/retinaface/weights/retinaface-resnet50.onnx
+
 COPY . .
 
 EXPOSE 7860
