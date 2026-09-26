@@ -1,9 +1,9 @@
 VERSION ?= dev
-ARCH ?= arm64
 REGISTRY ?= registry.cn-beijing.aliyuncs.com
 IMAGE_REPOSITORY ?= younger833/hivision_idphotos
 IMAGE := $(REGISTRY)/$(IMAGE_REPOSITORY):$(VERSION)
-DOCKER_PLATFORM ?= linux/$(ARCH)
+DOCKER_PLATFORM ?= linux/amd64,linux/arm64
+DOCKER_BUILD = docker buildx build --provenance=false --platform $(DOCKER_PLATFORM) -t $(IMAGE)
 HELM_RELEASE ?= photos
 KUBE_NAMESPACE ?= default
 CHART ?= deployments/photos
@@ -14,10 +14,10 @@ HELM ?= helm
 build: docker-build
 
 docker-build:
-	docker build --provenance=false --platform $(DOCKER_PLATFORM) -t $(IMAGE) .
+	$(DOCKER_BUILD) .
 
-docker-push: docker-build
-	docker push $(IMAGE)
+docker-push:
+	$(DOCKER_BUILD) --push .
 
 deploy:
 	$(HELM) upgrade --install $(HELM_RELEASE) $(CHART) --namespace $(KUBE_NAMESPACE) --create-namespace --set-string image=$(IMAGE) --atomic --wait
