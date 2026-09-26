@@ -14,7 +14,7 @@ HELM ?= helm
 build: docker-build
 
 docker-build:
-	docker build --platform $(DOCKER_PLATFORM) -t $(IMAGE) .
+	docker build --provenance=false --platform $(DOCKER_PLATFORM) -t $(IMAGE) .
 
 docker-push: docker-build
 	docker push $(IMAGE)
